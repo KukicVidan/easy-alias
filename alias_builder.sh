@@ -6,6 +6,13 @@ if [ -n "$BASH_VERSION" ]; then
     SHELL_CONFIG_FILE="$HOME/.bashrc"  # Use .bashrc for Bash
 fi
 
+# Backup the shell config file before modifying
+BACKUP_FILE="$SHELL_CONFIG_FILE.backup"
+if [ ! -f "$BACKUP_FILE" ]; then
+    cp "$SHELL_CONFIG_FILE" "$BACKUP_FILE"
+    echo "Backup of your shell configuration file created at $BACKUP_FILE"
+fi
+
 # Function to check if the aliases are already set up in the shell config file
 setup_aliases() {
     # Check if aliases are already set in the config file
@@ -15,8 +22,6 @@ setup_aliases() {
         # Add the aliases to the shell config file
         echo "alias alias-new='bash $0 alias-new'" >> "$SHELL_CONFIG_FILE"
         echo "alias alias-list='bash $0 alias-list'" >> "$SHELL_CONFIG_FILE"
-        echo "alias alias-delete='bash $0 alias-delete'" >> "$SHELL_CONFIG_FILE"
-        echo "alias alias-help='bash $0 alias-help'" >> "$SHELL_CONFIG_FILE"
         
         # Reload shell config file to apply aliases immediately
         echo "Aliases set up successfully!"
@@ -39,39 +44,17 @@ alias_new() {
     source "$SHELL_CONFIG_FILE"
 }
 
-# Function to list all aliases
+# Function to list all aliases with color coding
 alias_list() {
-    echo "List of Aliases:"
-    alias | nl -w 2 -s '. '  # List aliases with line numbers
-}
-
-# Function to delete an alias by ID
-alias_delete() {
-    read -p "Enter alias ID to delete: " alias_id
-
-    # List all aliases and select the one to delete
-    alias | nl -w 2 -s '. ' | sed -n "${alias_id}p" | while read -r line; do
+    echo -e "\nList of Aliases:"
+    alias | while read -r line; do
+        # Extract alias name and command
         alias_name=$(echo "$line" | awk '{print $2}' | sed "s/alias \(.*\)=.*/\1/")
-        # Remove alias from the config file
-        if grep -q "alias $alias_name=" "$SHELL_CONFIG_FILE"; then
-            sed -i "/alias $alias_name=/d" "$SHELL_CONFIG_FILE"
-            echo "Alias '$alias_name' deleted successfully!"
-        else
-            echo "Alias '$alias_name' not found in $SHELL_CONFIG_FILE."
-        fi
-    done
-    
-    # Reload config file
-    source "$SHELL_CONFIG_FILE"
-}
+        alias_command=$(echo "$line" | sed "s/alias .*=//")
 
-# Function to display help
-alias_help() {
-    echo "Alias Manager Help:"
-    echo "  alias-new        : Add a new alias"
-    echo "  alias-list       : List all aliases"
-    echo "  alias-delete <ID>: Delete an alias by its ID"
-    echo "  alias-help       : Show this help message"
+        # Color-coded output
+        echo -e "\033[34m$alias_name\033[0m = \033[32m$alias_command\033[0m"
+    done
 }
 
 # Main script logic based on passed argument
@@ -81,8 +64,6 @@ if [ -z "$1" ]; then
     echo "Please use the following commands to manage aliases:"
     echo "  alias-new        : Add a new alias"
     echo "  alias-list       : List all aliases"
-    echo "  alias-delete     : Delete an alias by its ID"
-    echo "  alias-help       : Show this help message"
 else
     case "$1" in
         alias-new)
@@ -91,14 +72,8 @@ else
         alias-list)
             alias_list
             ;;
-        alias-delete)
-            alias_delete
-            ;;
-        alias-help)
-            alias_help
-            ;;
         *)
-            echo "Usage: $0 [alias-new|alias-list|alias-delete <ID>|alias-help]"
+            echo "Usage: $0 [alias-new|alias-list]"
             ;;
     esac
 fi
