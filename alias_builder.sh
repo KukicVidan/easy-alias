@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CONFIG_FILE="$HOME/.zshrc" # Change to ~/.bashrc if using bash
+CONFIG_FILE="$HOME/.zshrc"
 [ -f "$HOME/.bashrc" ] && CONFIG_FILE="$HOME/.bashrc"
 
 # Help menu
@@ -19,7 +19,6 @@ function alias_help() {
     echo -e "                Example: \033[32malias-help\033[0m"
     echo -e "\033[36m=========================\033[0m"
 }
-
 
 # List aliases with IDs
 function alias_list() {
@@ -41,7 +40,6 @@ function alias_delete() {
         return 1
     fi
 
-    # Get all aliases as an array
     local aliases=()
     while read -r line; do
         aliases+=("$line")
@@ -52,11 +50,9 @@ function alias_delete() {
         return 1
     fi
 
-    # Remove the selected alias
     local alias_to_remove="${aliases[$((id - 1))]}"
     sed -i "/^$alias_to_remove$/d" "$CONFIG_FILE"
 
-    # Reload the configuration
     source "$CONFIG_FILE"
     echo -e "\033[32mAlias ID $id successfully deleted.\033[0m"
 }
@@ -73,7 +69,6 @@ function alias_new() {
         return 1
     fi
 
-    # Append the alias to the configuration file
     echo "alias $alias_name=\"$alias_command\"" >> "$CONFIG_FILE"
     source "$CONFIG_FILE"
     echo -e "\033[32mAlias '$alias_name' added successfully!\033[0m"
@@ -86,6 +81,9 @@ case "$1" in
         ;;
     --delete)
         alias_delete "$2"
+        ;;
+    --help)
+        alias_help
         ;;
     *)
         alias_new
