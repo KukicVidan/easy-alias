@@ -24,12 +24,12 @@ function alias_help() {
 function alias_list() {
     echo -e "\033[32mList of Aliases:\033[0m"
     local i=1
-    grep '^alias ' "$CONFIG_FILE" | while read -r line; do
-        local name=$(echo "$line" | sed -E 's/alias ([^=]+)=.*/\\1/')
-        local cmd=$(echo "$line" | sed -E 's/alias [^=]+="(.+)"/\\1/')
+    while IFS= read -r line; do
+        local name=$(echo "$line" | sed -E 's/alias ([^=]+)=.*/\1/')
+        local cmd=$(echo "$line" | sed -E 's/alias [^=]+="(.+)"/\1/')
         echo -e "[$i] \033[34m$name\033[0m = \033[32m$cmd\033[0m"
         ((i++))
-    done
+    done < <(grep '^alias ' "$CONFIG_FILE")
 }
 
 # Delete an alias by ID
@@ -73,6 +73,20 @@ function alias_new() {
     source "$CONFIG_FILE"
     echo -e "\033[32mAlias '$alias_name' added successfully!\033[0m"
 }
+
+# Add aliases for the script commands to the shell configuration
+if ! grep -q 'alias-new' "$CONFIG_FILE"; then
+    echo "alias alias-new='bash $PWD/$(basename "$0")'" >> "$CONFIG_FILE"
+fi
+if ! grep -q 'alias-list' "$CONFIG_FILE"; then
+    echo "alias alias-list='bash $PWD/$(basename "$0") --list'" >> "$CONFIG_FILE"
+fi
+if ! grep -q 'alias-delete' "$CONFIG_FILE"; then
+    echo "alias alias-delete='bash $PWD/$(basename "$0") --delete'" >> "$CONFIG_FILE"
+fi
+if ! grep -q 'alias-help' "$CONFIG_FILE"; then
+    echo "alias alias-help='bash $PWD/$(basename "$0") --help'" >> "$CONFIG_FILE"
+fi
 
 # Check for script arguments
 case "$1" in
