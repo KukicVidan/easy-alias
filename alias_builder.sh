@@ -3,6 +3,24 @@
 CONFIG_FILE="$HOME/.zshrc" # Change to ~/.bashrc if using bash
 [ -f "$HOME/.bashrc" ] && CONFIG_FILE="$HOME/.bashrc"
 
+# Help menu
+function alias_help() {
+    echo -e "\033[36m=========================\033[0m"
+    echo -e "\033[32m       Easy Alias        \033[0m"
+    echo -e "\033[36m=========================\033[0m"
+    echo -e "\033[33mCommands:\033[0m"
+    echo -e "\033[34malias-new\033[0m     - Create a new alias. Prompts for alias name and command."
+    echo -e "                Example: \033[32malias-new\033[0m"
+    echo -e "\033[34malias-list\033[0m    - List all defined aliases with IDs."
+    echo -e "                Example: \033[32malias-list\033[0m"
+    echo -e "\033[34malias-delete <ID>\033[0m - Delete an alias by its ID."
+    echo -e "                Example: \033[32malias-delete 1\033[0m"
+    echo -e "\033[34malias-help\033[0m     - Show this help menu."
+    echo -e "                Example: \033[32malias-help\033[0m"
+    echo -e "\033[36m=========================\033[0m"
+}
+
+
 # List aliases with IDs
 function alias_list() {
     echo -e "\033[32mList of Aliases:\033[0m"
