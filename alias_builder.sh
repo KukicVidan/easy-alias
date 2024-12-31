@@ -1,42 +1,37 @@
 #!/bin/bash
 
-# Define where to store the aliases (based on shell type)
+# Determine the shell config file based on the active shell (Bash or Zsh)
 SHELL_CONFIG_FILE="$HOME/.zshrc"   # Default to Zsh
 if [ -n "$BASH_VERSION" ]; then
     SHELL_CONFIG_FILE="$HOME/.bashrc"  # Use .bashrc for Bash
 fi
 
-# Check if aliases are already defined in the config file
-if ! grep -q "alias alias-new=" "$SHELL_CONFIG_FILE"; then
-    # Add the aliases to the shell config file
-    echo "Setting up aliases in your shell config file..."
+# Function to check if the aliases are already set up in the shell config file
+setup_aliases() {
+    # Check if aliases are already set in the config file
+    if ! grep -q "alias alias-new=" "$SHELL_CONFIG_FILE"; then
+        echo "Setting up aliases in your shell config file..."
+        
+        # Add the aliases to the shell config file
+        echo "alias alias-new='bash $0 alias-new'" >> "$SHELL_CONFIG_FILE"
+        echo "alias alias-list='bash $0 alias-list'" >> "$SHELL_CONFIG_FILE"
+        echo "alias alias-delete='bash $0 alias-delete'" >> "$SHELL_CONFIG_FILE"
+        echo "alias alias-help='bash $0 alias-help'" >> "$SHELL_CONFIG_FILE"
+        
+        # Reload shell config file to apply aliases immediately
+        echo "Aliases set up successfully!"
+        echo "Reloading your shell configuration..."
 
-    # Define the aliases
-    echo "alias alias-new='bash $0 alias-new'" >> "$SHELL_CONFIG_FILE"
-    echo "alias alias-list='bash $0 alias-list'" >> "$SHELL_CONFIG_FILE"
-    echo "alias alias-delete='bash $0 alias-delete'" >> "$SHELL_CONFIG_FILE"
-    echo "alias alias-help='bash $0 alias-help'" >> "$SHELL_CONFIG_FILE"
+        source "$SHELL_CONFIG_FILE"  # Reload to apply the new aliases
+    fi
+}
 
-    # Reload shell config file
-    echo "Aliases set up successfully!"
-    echo "Reloading your shell configuration..."
-
-    # Reload config file
-    source "$SHELL_CONFIG_FILE"
-fi
-
-# Define functions for alias management
+# Function to add a new alias
 alias_new() {
     read -p "Enter alias name: " alias_name
     read -p "Enter the command for alias '$alias_name': " alias_command
 
-    # Check if alias already exists
-    if grep -q "alias $alias_name=" "$SHELL_CONFIG_FILE"; then
-        echo "Alias '$alias_name' already exists!"
-        return 1
-    fi
-
-    # Append alias to config file
+    # Append the new alias to the shell config file
     echo "alias $alias_name='$alias_command'" >> "$SHELL_CONFIG_FILE"
     echo "Alias '$alias_name' added successfully!"
     
@@ -44,13 +39,13 @@ alias_new() {
     source "$SHELL_CONFIG_FILE"
 }
 
-# List all aliases
+# Function to list all aliases
 alias_list() {
     echo "List of Aliases:"
     alias | nl -w 2 -s '. '  # List aliases with line numbers
 }
 
-# Delete an alias by ID
+# Function to delete an alias by ID
 alias_delete() {
     read -p "Enter alias ID to delete: " alias_id
 
@@ -70,7 +65,7 @@ alias_delete() {
     source "$SHELL_CONFIG_FILE"
 }
 
-# Display help message
+# Function to display help
 alias_help() {
     echo "Alias Manager Help:"
     echo "  alias-new        : Add a new alias"
@@ -80,20 +75,30 @@ alias_help() {
 }
 
 # Main script logic based on passed argument
-case "$1" in
-    alias-new)
-        alias_new
-        ;;
-    alias-list)
-        alias_list
-        ;;
-    alias-delete)
-        alias_delete
-        ;;
-    alias-help)
-        alias_help
-        ;;
-    *)
-        echo "Usage: $0 [alias-new|alias-list|alias-delete <ID>|alias-help]"
-        ;;
-esac
+if [ -z "$1" ]; then
+    # Setup aliases if not already set up
+    setup_aliases
+    echo "Please use the following commands to manage aliases:"
+    echo "  alias-new        : Add a new alias"
+    echo "  alias-list       : List all aliases"
+    echo "  alias-delete     : Delete an alias by its ID"
+    echo "  alias-help       : Show this help message"
+else
+    case "$1" in
+        alias-new)
+            alias_new
+            ;;
+        alias-list)
+            alias_list
+            ;;
+        alias-delete)
+            alias_delete
+            ;;
+        alias-help)
+            alias_help
+            ;;
+        *)
+            echo "Usage: $0 [alias-new|alias-list|alias-delete <ID>|alias-help]"
+            ;;
+    esac
+fi
