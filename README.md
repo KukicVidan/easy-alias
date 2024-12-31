@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/1114336e-f078-435f-af73-eaaf2badb75b)
+![image](https://github.com/user-attachments/assets/a5c097fd-c21d-46c6-9b86-ea1457dfd4ed)
 
 
 # Easy Alias 
