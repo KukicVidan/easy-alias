@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Color codes
@@ -30,10 +29,10 @@ install_script_aliases() {
     
     # Add alias-new and alias-list
     if ! grep -q "alias alias-new=" "$CONFIG_FILE"; then
-        echo "alias alias-new='bash $script_path'" >> "$CONFIG_FILE"
+        echo "alias alias-new='zsh $script_path'" >> "$CONFIG_FILE"
     fi
     if ! grep -q "alias alias-list=" "$CONFIG_FILE"; then
-        echo "alias alias-list='bash $script_path --list'" >> "$CONFIG_FILE"
+        echo "alias alias-list='zsh $script_path --list'" >> "$CONFIG_FILE"
     fi
 
     # Source config file
@@ -42,6 +41,7 @@ install_script_aliases() {
     echo -e "${GREEN}Script aliases installed successfully!${RESET}"
     echo -e "${CYAN}Use 'alias-new' to create new aliases.${RESET}"
     echo -e "${CYAN}Use 'alias-list' to list all aliases.${RESET}"
+    echo -e "${CYAN}Please restart your terminal or run 'source ~/.zshrc' to load the changes.${RESET}"
 }
 
 list_aliases() {
