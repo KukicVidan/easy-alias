@@ -27,7 +27,7 @@ fi
 install_script_aliases() {
     script_path=$(realpath "$0")
     
-    # Add alias-new and alias-list
+    # Add alias-new and alias-list regardless of alias creation
     if ! grep -q "alias alias-new=" "$CONFIG_FILE"; then
         echo "alias alias-new='zsh $script_path'" >> "$CONFIG_FILE"
     fi
@@ -89,9 +89,13 @@ create_alias() {
 }
 
 # Main script logic
+# Install the script aliases first
+install_script_aliases
+
+# Then check if --list flag is provided
 if [[ $1 == "--list" ]]; then
     list_aliases
 else
+    # Create alias if no argument is provided
     create_alias
-    install_script_aliases
 fi
