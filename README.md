@@ -1,5 +1,5 @@
 # Easy Alias 
-#fixing app at the moment. not usable.
+
 
 Easy Alias is a lightweight and user-friendly command-line tool designed to simplify the creation and management of shell aliases. This script allows users to quickly define new aliases, view existing ones, and immediately use them in their shell environment.
 
