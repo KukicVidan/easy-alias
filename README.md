@@ -1,3 +1,4 @@
+This is created as a practice! it works but i do not plan on updating it!
 # Easy Alias 
 
 
